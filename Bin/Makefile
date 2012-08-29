@@ -7,7 +7,7 @@
 # ----
 # Version number of .hex files to be generated
 # ----
-VERSION=G251
+VERSION=251
 
 
 # ----
