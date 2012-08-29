@@ -1,10 +1,44 @@
-CROSS=arm-eabi-
+# ----------------------------------------------------------------------
+# Bin/Makefile
+#
+#	Build the DSO203_GCC firmware on a UNIX system.
+# ----------------------------------------------------------------------
+
+# ----
+# Version number of .hex files to be generated
+# ----
+VERSION=251
+
+
+# ----
+# OS specific settings
+#
+#	On most platforms, the cross compile prefix is arm-none-eabi-.
+#	Don't know what "none" is for, but on FreeBSD it is just
+#	arm-eabi-. 
+# ----
+OS=$(shell uname -s)
+
+ifeq ($(OS),FreeBSD)
+	CROSS=arm-eabi-
+endif
+
+CROSS?=arm-none-eabi
+
+
+# ----
+# Paths to toolchain executables
+# ----
 CC=$(CROSS)gcc
 OBJCOPY=$(CROSS)objcopy
 LD=$(CROSS)ld
 AS=$(CROSS)as
 STRIP=$(CROSS)strip
 
+
+# ----
+# Paths to source files
+# ----
 STM_INC=../FWLib/inc
 STM_SRC=../FWLib/src
 STM_ASM=../FWLib/asm
@@ -14,12 +48,18 @@ SRC_INC=../App/inc
 SRC_LDS=../App/lds
 SRC_ASM=../App/asm
 
-VERSION=251
 
+# ----
+# Compiler and linker flags
+# ----
 CFLAGS = -Wall -Os -Werror -fno-common -mcpu=cortex-m3 -mthumb -msoft-float -fomit-frame-pointer -MD -I $(STM_INC) -I $(SRC_INC) -I $(SRC_SRC)
 AFLAGS = -mcpu=cortex-m3 -mthumb
 LDFLAGS = -nostartfiles -mcpu=cortex-m3 -mthumb -march=armv7 -mfix-cortex-m3-ldrd -msoft-float
 
+
+# ----
+# Files and targets
+# ----
 OBJS =	Calibrat.o \
 		Draw.o  \
 		Files.o \
