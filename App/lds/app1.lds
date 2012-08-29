@@ -5,4 +5,4 @@ MEMORY
   ram (rwx) : ORIGIN = 0x20003000, LENGTH = 36K
 }
 
-INCLUDE ../app/lds/main.lds
+INCLUDE ../App/lds/main.lds

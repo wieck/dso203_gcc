@@ -25,7 +25,9 @@
   .globl __ISB
   .globl __DSB
   .globl __DMB
+  /*
   .globl __SVC
+  */
   .globl __MRS_CONTROL
   .globl __MSR_CONTROL
   .globl __MRS_PSP
@@ -115,10 +117,12 @@ __DMB:
 /*  Input          : None */
 /*  Return         : None */
 /* ******************************************************************************* */
+/*
 __SVC:
 
     SVC 0x01
     BX r14
+*/
 
 /* ******************************************************************************* */
 /*  Function Name  : __MRS_CONTROL */
