@@ -7,7 +7,7 @@
 # ----
 # Version number of .hex files to be generated
 # ----
-VERSION=251
+VERSION=125
 
 
 # ----
@@ -73,7 +73,7 @@ OBJS =	Calibrat.o \
 		stm32f10x_nvic.o \
 		cortexm3_macro.o
 
-TARGETS = APP1_$(VERSION).hex APP2_$(VERSION).hex APP3_$(VERSION).hex 
+TARGETS = APP1G$(VERSION).hex APP2G$(VERSION).hex APP3G$(VERSION).hex 
 
 all: $(OBJS) $(TARGETS)
 
@@ -120,24 +120,24 @@ cortexm3_macro.o:	$(STM_ASM)/cortexm3_macro.s
 
 
 
-APP1_$(VERSION).elf:	$(SRC_LDS)/app1.lds $(OBJS)
+APP1G$(VERSION).elf:	$(SRC_LDS)/app1.lds $(OBJS)
 	$(CC) -o $@ $(OBJS) $(LDFLAGS) -T $<
 
-APP2_$(VERSION).elf:	$(SRC_LDS)/app2.lds $(OBJS)
+APP2G$(VERSION).elf:	$(SRC_LDS)/app2.lds $(OBJS)
 	$(CC) -o $@ $(OBJS) $(LDFLAGS) -T $<
 
-APP3_$(VERSION).elf:	$(SRC_LDS)/app3.lds $(OBJS)
+APP3G$(VERSION).elf:	$(SRC_LDS)/app3.lds $(OBJS)
 	$(CC) -o $@ $(OBJS) $(LDFLAGS) -T $<
 
 
 
-APP1_$(VERSION).hex:	APP1_$(VERSION).elf
+APP1G$(VERSION).hex:	APP1G$(VERSION).elf
 	$(OBJCOPY) -O ihex $< $@
 	
-APP2_$(VERSION).hex:	APP2_$(VERSION).elf
+APP2G$(VERSION).hex:	APP2G$(VERSION).elf
 	$(OBJCOPY) -O ihex $< $@
 	
-APP3_$(VERSION).hex:	APP3_$(VERSION).elf
+APP3G$(VERSION).hex:	APP3G$(VERSION).elf
 	$(OBJCOPY) -O ihex $< $@
 	
 
