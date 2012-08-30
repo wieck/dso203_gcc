@@ -80,7 +80,7 @@ all: $(OBJS) $(TARGETS)
 .PHONY: clean
 
 clean:
-	rm -f *.o *.d *.elf $(TARGETS)
+	rm -f *.o *.d *.elf
 
 Calibrat.o:	$(SRC_SRC)/Calibrat.c
 	$(CC) $(CFLAGS) -c -o $@ $^
