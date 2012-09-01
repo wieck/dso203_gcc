@@ -23,7 +23,7 @@ ifeq ($(OS),FreeBSD)
 	CROSS=arm-eabi-
 endif
 
-CROSS?=arm-none-eabi
+CROSS?=arm-none-eabi-
 
 
 # ----
