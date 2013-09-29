@@ -3,6 +3,8 @@ Compiling the DSO203 community firmware on FreeBSD.
 You need to install the arm-eabi toolchain. As root install the
 port devel/cross-gcc. This will also install devel/cross-binutils.
 
+    # cd /usr/ports/devel/cross-binutils
+    # make install clean TGTARCH=arm TGTABI=eabi
     # cd /usr/ports/devel/cross-gcc
     # make install clean TGTARCH=arm TGTABI=eabi
 
@@ -19,9 +21,9 @@ As a regular user you can now compile the DSO203 firmware.
 
 This will create all 3 possible .hex files as
 
-    ./App/APP1_Gnnn.hex
-    ./App/APP2_Gnnn.hex
-    ./App/APP3_Gnnn.hex
+    ./Bin/APP1_Gnnn.hex
+    ./Bin/APP2_Gnnn.hex
+    ./Bin/APP3_Gnnn.hex
 
 nnn is the three digit version number of the firmware.
 
