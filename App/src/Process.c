@@ -88,6 +88,7 @@ D_tab D_Tab[23] ={  // pulse waveform output driver table, based on the 72MHz fr
 
 A_tab A_Tab[15] ={ // analog waveform output driver table synthesis, based on the 72MHz frequency, per 36
 //    STR     PSC     ARR 
+#if 0
   {"! 1Hz !", 20-1,  50000-1},
   {"! 2Hz !", 20-1,  20000-1},
   {"! 5Hz !", 20-1,  10000-1},
@@ -103,6 +104,23 @@ A_tab A_Tab[15] ={ // analog waveform output driver table synthesis, based on th
   {"!10KHz!", 10-1,     10-1},
   {"!20KHz!", 10-1,      5-1},
   {"!40KHz!",  4-1,      5-1}};
+#else
+  {"! 1Hz !", 20-1,  50000-1}, // changed
+  {"! 2Hz !", 20-1,  25000-1}, // changed
+  {"! 5Hz !", 20-1,  10000-1}, // changed
+  {" 10Hz ",  10-1,   5000-1}, // changed
+  {" 20Hz ",  10-1,   2500-1}, // changed
+  {" 50Hz ",  10-1,   1000-1}, // changed
+  {"!100Hz!", 10-1,    500-1}, // changed
+  {"!200Hz!", 10-1,    250-1}, // changed
+  {"!500Hz!", 10-1,    100-1}, // changed
+  {" 1KHz ",  10-1,     50-1}, // changed
+  {" 2KHz ",  10-1,     25-1}, // changed
+  {" 5KHz ",  10-1,     10-1}, // changed
+  {"!10KHz!", 10-1,      5-1}, // changed
+  {"!20KHz!", 10-1,      5-1}, // wrong
+  {"!50KHz!", 10-1,      2-1}}; //wrong
+#endif
 
 u16   ATT_DATA[72];
 
@@ -224,66 +242,56 @@ void Update_Output(void)
 {
   
   u8 att;
+  u16 *data;
 
   switch (_Kind) {
   
-  case SINE:
-	for(att=0; att <72; att++){ 
-		ATT_DATA[att]=(SIN_DATA[att]*Title[OUTPUT][OUTATT].Value)/100;}
-    DMA2_Channel4->CCR &= ~DMA_CCR1_EN;
-    __Set(ANALOG_PSC,  A_Tab[_Frqn].PSC);
-    __Set(ANALOG_CNT, 72);
-    __Set(ANALOG_PTR, (u32)ATT_DATA);
-    DMA2_Channel4->CCR |= DMA_CCR1_EN;
-    __Set(ANALOG_ARR, A_Tab[_Frqn].ARR);
-	break;
-  
-  case SAW:
-   for(att=0; att <72; att++){ 
-     ATT_DATA[att]=(SAW_DATA[att]*Title[OUTPUT][OUTATT].Value)/100;}
-     DMA2_Channel4->CCR &= ~DMA_CCR1_EN;
-      __Set(ANALOG_PSC,  A_Tab[_Frqn].PSC);
-      __Set(ANALOG_CNT, 72);
-      __Set(ANALOG_PTR, (u32)ATT_DATA);
-     DMA2_Channel4->CCR |= DMA_CCR1_EN;
-      __Set(ANALOG_ARR, A_Tab[_Frqn].ARR);
-	  break;
- 
-  case TRIANG:
-    for(att=0; att <72; att++){ 
-     ATT_DATA[att]=(TRG_DATA[att]*Title[OUTPUT][OUTATT].Value)/100;}
-     DMA2_Channel4->CCR &= ~DMA_CCR1_EN;
-      __Set(ANALOG_PSC,  A_Tab[_Frqn].PSC);
-      __Set(ANALOG_CNT, 72);
-      __Set(ANALOG_PTR, (u32)ATT_DATA);
-    DMA2_Channel4->CCR |= DMA_CCR1_EN;
-      __Set(ANALOG_ARR, A_Tab[_Frqn].ARR);
-	  break;
-  
-  case DIGI:
-    for(att=0; att <72; att++){ 
-     ATT_DATA[att]=(DIGI_DATA[att]*Title[OUTPUT][OUTATT].Value)/100;}
-     DMA2_Channel4->CCR &= ~DMA_CCR1_EN;
-      __Set(ANALOG_PSC,  A_Tab[_Frqn].PSC);
-      __Set(ANALOG_CNT, 72);
-      __Set(ANALOG_PTR, (u32)ATT_DATA);
-    DMA2_Channel4->CCR |= DMA_CCR1_EN;
-      __Set(ANALOG_ARR, A_Tab[_Frqn].ARR);
-	break;
 
- case PWM:
+  case PWM:
     __Set(DIGTAL_PSC, D_Tab[_Frqn].PSC);
     __Set(DIGTAL_ARR, D_Tab[_Frqn].ARR);
     __Set(DIGTAL_CCR, ((D_Tab[_Frqn].ARR+1)*(100-Title[OUTPUT][DUTYPWM].Value))/100);
-	break;
+	return;
 	
-case NOOUT:
+  case NOOUT:
     __Set(DIGTAL_PSC, D_Tab[_Frqn].PSC);
     __Set(DIGTAL_ARR, D_Tab[_Frqn].ARR);
     __Set(DIGTAL_CCR, (D_Tab[_Frqn].ARR+1));
+	return;
+
+  case SINE:
+	data = SIN_DATA;
+	break;
+
+  case SAW:
+  	data = SAW_DATA;
+	break;
+
+  case TRIANG:
+  	data = TRG_DATA;
+	break;
+
+  case DIGI:
+  default:
+  	data = DIGI_DATA;
 	break;
   }
   
+  if (_Frqn < 13)
+	  for(att=0; att < 72; att++){ 
+		  ATT_DATA[att]=(data[att]*Title[OUTPUT][OUTATT].Value)/100;}
+  else
+	  for(att=0; att < 36; att++){ 
+		  ATT_DATA[att]=(data[att * 2]*Title[OUTPUT][OUTATT].Value)/100;}
+  DMA2_Channel4->CCR &= ~DMA_CCR1_EN;
+  __Set(ANALOG_PSC,  A_Tab[_Frqn].PSC);
+  if (_Frqn < 13)
+	  __Set(ANALOG_CNT, 72);
+  else
+	  __Set(ANALOG_CNT, 36);
+  __Set(ANALOG_PTR, (u32)ATT_DATA);
+  DMA2_Channel4->CCR |= DMA_CCR1_EN;
+  __Set(ANALOG_ARR, A_Tab[_Frqn].ARR);
 }
 
 /*******************************************************************************
